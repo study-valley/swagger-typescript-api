@@ -1,3 +1,4 @@
+import { default as defaultAxios, AxiosInstance, Method } from 'axios'
 <%
   const { modelTypes, utils } = it;
   const { formatDescription, require } = utils;

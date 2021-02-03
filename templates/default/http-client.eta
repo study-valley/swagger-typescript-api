@@ -47,7 +47,7 @@ export class HttpClient<<%~ apiConfig.generic.map(g => `${g.name} = unknown`).jo
         referrerPolicy: 'no-referrer',
     }
 
-    constructor(apiConfig: ApiConfig<<%~ apiConfig.generic.map(g => g.name).join(', ') %>> = {}) {
+    constructor(apiConfig: ApiConfig<<%~ apiConfig.generic.map(g => g.name).join(', ') %>> = {}, private axios: AxiosInstance = defaultAxios) {
         Object.assign(this, apiConfig);
     }
 
@@ -119,7 +119,7 @@ export class HttpClient<<%~ apiConfig.generic.map(g => `${g.name} = unknown`).jo
         body?: any,
         bodyType?: BodyType,
         secureByDefault?: boolean,
-    ): <% if (generateResponses) { %>TPromise<HttpResponse<T, E>><% } else { %>Promise<HttpResponse<T>><% } %> => {
+    ) => {
         const requestUrl = `${this.baseUrl}${path}`;
         const secureOptions = (secureByDefault || secure) && this.securityWorker ? this.securityWorker(this.securityData) : {};
         const requestOptions = {
@@ -128,10 +128,11 @@ export class HttpClient<<%~ apiConfig.generic.map(g => `${g.name} = unknown`).jo
             body: body ? this.bodyFormatters[bodyType || BodyType.Json](body) : null,
         }
 
-        return fetch(requestUrl, requestOptions).then(async response => {
-            const data = await this.safeParseResponse<T, E>(response);
-            if (!response.ok) throw data
-            return data
+        return this.axios.request<T>({
+             url: requestUrl,
+             ...requestOptions,
+             data: body,
+             method: requestOptions.method as Method
         })
     }
 }
