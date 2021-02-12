@@ -34,7 +34,7 @@ enum BodyType {
 }
 
 export class HttpClient<<%~ apiConfig.generic.map(g => `${g.name} = unknown`).join(', ') %>> {
-    public baseUrl: string = "<%~ apiConfig.baseUrl %>";
+    public baseUrl: string = config.url.API_URL;
     private securityData: SecurityDataType = (null as any);
     private securityWorker: null | ApiConfig<<%~ apiConfig.generic.map(g => g.name).join(', ') %>>["securityWorker"] = null;
 
